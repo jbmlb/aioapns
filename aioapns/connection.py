@@ -1,5 +1,6 @@
 import asyncio
 import json
+import os.path
 import ssl
 import time
 from functools import partial
@@ -549,9 +550,11 @@ class APNsKeyConnectionPool(APNsBaseConnectionPool):
 
         self.key_id = key_id
         self.team_id = team_id
-
-        with open(key_file) as f:
-            self.key = f.read()
+        if os.path.exists(key_file):
+            with open(key_file) as f:
+                self.key = f.read()
+        else:
+            self.key = key_file
 
     async def create_connection(self) -> APNsBaseClientProtocol:
         auth_provider = JWTAuthorizationHeaderProvider(
